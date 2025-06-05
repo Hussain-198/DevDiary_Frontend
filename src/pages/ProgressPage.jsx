@@ -26,7 +26,7 @@ function ProgressPage() {
     const fetchGoals = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/goals", {
+        const res = await fetch("https://dd-backend-m1ic.onrender.com/api/goals", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

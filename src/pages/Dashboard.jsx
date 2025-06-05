@@ -25,13 +25,15 @@ function Dashboard() {
   const [countdowns, setCountdowns] = useState({});
   const intervalRef = useRef(null);
 
-
   const fetchGoals = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/goals", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://dd-backend-m1ic.onrender.com/api/goals",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) {
         const error = await res.json();
@@ -42,9 +44,12 @@ function Dashboard() {
       if (!Array.isArray(data)) throw new Error("Goals data is not an array");
 
       const today = new Date().toISOString().split("T")[0];
+      console.log(data);
+
       const todaysGoals = data.filter(
         (goal) => goal.targetDate && goal.targetDate.slice(0, 10) >= today
       );
+      console.log(todaysGoals);
 
       setGoals(todaysGoals);
     } catch (err) {
@@ -52,13 +57,15 @@ function Dashboard() {
     }
   };
 
-
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/tasks", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://dd-backend-m1ic.onrender.com/api/tasks",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) {
         const error = await res.json();
@@ -74,7 +81,6 @@ function Dashboard() {
     }
   };
 
-
   const handleAddGoal = async () => {
     if (!newGoal.trim() || !newDeadline) {
       alert("Please enter goal title and deadline");
@@ -83,17 +89,20 @@ function Dashboard() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/goals", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: newGoal,
-          targetDate: newDeadline,
-        }),
-      });
+      const res = await fetch(
+        "https://dd-backend-m1ic.onrender.com/api/goals",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: newGoal,
+            targetDate: newDeadline,
+          }),
+        }
+      );
 
       if (!res.ok) {
         const error = await res.json();
@@ -109,11 +118,10 @@ function Dashboard() {
     }
   };
 
-
   const handleDeleteGoal = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/goals/${id}`, {
+      await fetch(`https://dd-backend-m1ic.onrender.com/api/goals/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -129,12 +137,11 @@ function Dashboard() {
     }
   };
 
-
   const handleUpdateGoal = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/goals/${editingGoalId}`,
+        `https://dd-backend-m1ic.onrender.com/api/goals/${editingGoalId}`,
         {
           method: "PUT",
           headers: {
@@ -161,12 +168,11 @@ function Dashboard() {
     }
   };
 
-
   useEffect(() => {
     if (goals.length === 0) return;
 
     const updateCountdowns = () => {
-      const now = new Date().getTime();
+      const now = Date.now(); // local time in ms
       const newCountdowns = {};
 
       goals.forEach((goal) => {
@@ -181,7 +187,19 @@ function Dashboard() {
         }
 
         const targetTime = new Date(goal.targetDate).getTime();
+
         const diff = targetTime - now;
+
+        console.log(
+          "Goal:",
+          goal.title,
+          "Now:",
+          new Date(now).toLocaleString(),
+          "Target:",
+          new Date(targetTime).toLocaleString(),
+          "Diff (ms):",
+          diff
+        );
 
         if (diff <= 0) {
           newCountdowns[goal._id] = "⛔ Deadline passed";
@@ -214,17 +232,15 @@ function Dashboard() {
     fetchData();
   }, []);
 
+  const goalStats = React.useMemo(() => {
+    const completedCount = goals.filter((goal) => goal.completed).length;
+    const pendingCount = goals.length - completedCount;
 
-const goalStats = React.useMemo(() => {
-  const completedCount = goals.filter((goal) => goal.completed).length;
-  const pendingCount = goals.length - completedCount;
-
-  return [
-    { name: "Completed", count: completedCount },
-    { name: "Pending", count: pendingCount },
-  ];
-}, [goals]);
-
+    return [
+      { name: "Completed", count: completedCount },
+      { name: "Pending", count: pendingCount },
+    ];
+  }, [goals]);
 
   if (loading) {
     return (
@@ -237,7 +253,6 @@ const goalStats = React.useMemo(() => {
   return (
     <Container className="mt-4">
       <h2 className="mb-4">Welcome, {user?.name || "Developer"}!</h2>
-
 
       <Card className="mb-4 p-3">
         <h4>📌 Today's Goals</h4>
@@ -300,9 +315,10 @@ const goalStats = React.useMemo(() => {
                       <small className="text-muted">
                         Deadline:{" "}
                         {goal.targetDate
-                          ? new Date(goal.targetDate).toLocaleString()
+                          ? goal.targetDate.replace("T", " ").slice(0, 16) // "2025-06-05 19:01"
                           : "No deadline"}
                       </small>
+
                       <br />
                       <small className="text-info">
                         Time Left: {countdowns[goal._id] || "Calculating..."}

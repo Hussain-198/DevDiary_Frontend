@@ -25,7 +25,7 @@ function TasksPage() {
   const fetchGoal = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/goals/${id}`, {
+      const res = await fetch(`https://dd-backend-m1ic.onrender.com/api/goals/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -51,7 +51,7 @@ function TasksPage() {
   const handleMarkCompleted = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/goals/${id}`, {
+      const res = await fetch(`https://dd-backend-m1ic.onrender.com/api/goals/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +76,7 @@ function TasksPage() {
         updateData.targetDate = deadline;
       }
 
-      const res = await fetch(`http://localhost:5000/api/goals/${id}`, {
+      const res = await fetch(`https://dd-backend-m1ic.onrender.com/api/goals/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

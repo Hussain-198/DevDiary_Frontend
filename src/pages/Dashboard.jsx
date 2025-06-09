@@ -190,16 +190,16 @@ function Dashboard() {
 
         const diff = targetTime - now;
 
-        console.log(
-          "Goal:",
-          goal.title,
-          "Now:",
-          new Date(now).toLocaleString(),
-          "Target:",
-          new Date(targetTime).toLocaleString(),
-          "Diff (ms):",
-          diff
-        );
+        // console.log(
+        //   "Goal:",
+        //   goal.title,
+        //   "Now:",
+        //   new Date(now).toLocaleString(),
+        //   "Target:",
+        //   new Date(targetTime).toLocaleString(),
+        //   "Diff (ms):",
+        //   diff
+        // );
 
         if (diff <= 0) {
           newCountdowns[goal._id] = "⛔ Deadline passed";

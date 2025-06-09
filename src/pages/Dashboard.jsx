@@ -118,24 +118,6 @@ function Dashboard() {
     }
   };
 
-  const handleDeleteGoal = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      await fetch(`https://dd-backend-m1ic.onrender.com/api/goals/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setGoals((prev) => prev.filter((goal) => goal._id !== id));
-      setCountdowns((prev) => {
-        const copy = { ...prev };
-        delete copy[id];
-        return copy;
-      });
-    } catch (err) {
-      console.error("Failed to delete goal:", err.message);
-    }
-  };
 
   const handleUpdateGoal = async () => {
     try {
@@ -172,7 +154,7 @@ function Dashboard() {
     if (goals.length === 0) return;
 
     const updateCountdowns = () => {
-      const now = Date.now(); // local time in ms
+      const now = Date.now(); 
       const newCountdowns = {};
 
       goals.forEach((goal) => {
@@ -189,17 +171,6 @@ function Dashboard() {
         const targetTime = new Date(goal.targetDate).getTime();
 
         const diff = targetTime - now;
-
-        // console.log(
-        //   "Goal:",
-        //   goal.title,
-        //   "Now:",
-        //   new Date(now).toLocaleString(),
-        //   "Target:",
-        //   new Date(targetTime).toLocaleString(),
-        //   "Diff (ms):",
-        //   diff
-        // );
 
         if (diff <= 0) {
           newCountdowns[goal._id] = "⛔ Deadline passed";
@@ -315,7 +286,7 @@ function Dashboard() {
                       <small className="text-muted">
                         Deadline:{" "}
                         {goal.targetDate
-                          ? goal.targetDate.replace("T", " ").slice(0, 16) // "2025-06-05 19:01"
+                          ? goal.targetDate.replace("T", " ").slice(0, 16)
                           : "No deadline"}
                       </small>
 
@@ -323,14 +294,6 @@ function Dashboard() {
                       <small className="text-info">
                         Time Left: {countdowns[goal._id] || "Calculating..."}
                       </small>
-                    </div>
-                    <div>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDeleteGoal(goal._id)}
-                      >
-                        Delete
-                      </button>
                     </div>
                   </>
                 )}
